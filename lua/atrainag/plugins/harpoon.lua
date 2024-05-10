@@ -19,13 +19,13 @@ return {
       end, { desc = "First harpoon window" })
       vim.keymap.set("n", "<C-2>", function()
         harpoon:list():select(2)
-      end)
+      end, { desc = "Second harpoon window" })
       vim.keymap.set("n", "<C-3>", function()
         harpoon:list():select(3)
-      end)
+      end, { desc = "Third harpoon window" })
       vim.keymap.set("n", "<C-4>", function()
         harpoon:list():select(4)
-      end)
+      end, { desc = "Fourth harpoon window" })
     end,
   },
 }
