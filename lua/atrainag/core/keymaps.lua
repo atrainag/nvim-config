@@ -17,9 +17,9 @@ keymap.set("n", "+", "<C-a>", { desc = "Increment number" }) -- increment
 keymap.set("n", "-", "<C-x>", { desc = "Decrement number" }) -- decrement
 
 -- Save file and quit
-keymap.set("n", "<Leader>w", ":update<Return>", opts)
-keymap.set("n", "<Leader>q", ":quit<Return>", opts)
-keymap.set("n", "<Leader>Q", ":qa<Return>", opts)
+keymap.set("n", "<Leader>w", ":update<Return>", opts, { desc = "Save file" })
+keymap.set("n", "<Leader>q", ":quit<Return>", opts, { desc = "Quit file" })
+keymap.set("n", "<Leader>Q", ":qa!<Return>", opts, { desc = "Force Quit all files" })
 
 -- window management
 keymap.set("n", "sv", "<C-w>v", { desc = "Split window vertically" }) -- split window vertically
