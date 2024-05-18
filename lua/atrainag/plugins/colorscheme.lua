@@ -1,14 +1,6 @@
 return {
   {
     {
-      "rose-pine/neovim",
-      priority = 1001,
-      config = function()
-        vim.g.rose_pine_variant = "moon"
-        vim.cmd("colorscheme rose-pine")
-      end,
-    },
-    {
       "folke/tokyonight.nvim",
       priority = 1000,
       config = function()
