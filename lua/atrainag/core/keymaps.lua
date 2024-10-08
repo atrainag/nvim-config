@@ -8,9 +8,6 @@ keymap.set({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>", { desc = "Save File" })
 keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
 
 keymap.set("n", "<leader>ll", ":Lazy<CR>")
---
--- select all
-keymap.set("n", "<C-a>", "gg<S-v>G")
 
 -- increment/decrement numbers
 keymap.set("n", "+", "<C-a>", { desc = "Increment number" }) -- increment

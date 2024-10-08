@@ -3,7 +3,7 @@ return {
   "nvim-telescope/telescope.nvim",
   dependencies = {
     "nvim-lua/plenary.nvim",
-    { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+    "nvim-telescope/telescope-fzf-native.nvim",
     "nvim-tree/nvim-web-devicons",
     "nvim-telescope/telescope-file-browser.nvim",
     "folke/todo-comments.nvim",
@@ -112,7 +112,6 @@ return {
       { desc = "Lists Diagnostics for all open buffers or a specific buffer" }
     )
     telescope.setup(opts)
-    telescope.load_extension("fzf")
     telescope.load_extension("file_browser")
   end,
 }

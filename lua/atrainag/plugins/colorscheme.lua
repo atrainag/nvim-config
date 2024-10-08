@@ -2,7 +2,7 @@ return {
   {
     {
       "rose-pine/neovim",
-      priority = 1001,
+      priority = 1000,
       config = function()
         vim.g.rose_pine_variant = "moon"
         vim.cmd("colorscheme rose-pine")
@@ -10,7 +10,7 @@ return {
     },
     {
       "folke/tokyonight.nvim",
-      priority = 1000,
+      priority = 1001,
       config = function()
         local bg = "#011628"
         local bg_dark = "#011423"
