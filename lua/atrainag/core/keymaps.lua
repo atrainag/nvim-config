@@ -43,7 +43,7 @@ end
 keymap.set("x", "<S-I>", "v:lua.check_visual_mode_insert()", { noremap = true, expr = true })
 function _G.check_visual_mode_insert()
   if vim.fn.mode() == "V" then
-    return "<C-v>$I"
+    return "<C-v>0I"
   else
     return "I"
   end
