@@ -34,7 +34,7 @@ keymap.set("n", "<leader>te", "<cmd>tabedit<CR>", { desc = "Open current buffer 
 keymap.set("x", "<S-A>", "v:lua.check_visual_mode_append()", { noremap = true, expr = true })
 function _G.check_visual_mode_append()
   if vim.fn.mode() == "V" then
-    return "<C-v>$A"
+    return "<C-v>g_A"
   else
     return "A"
   end
@@ -43,7 +43,7 @@ end
 keymap.set("x", "<S-I>", "v:lua.check_visual_mode_insert()", { noremap = true, expr = true })
 function _G.check_visual_mode_insert()
   if vim.fn.mode() == "V" then
-    return "<C-v>0I"
+    return "<C-v>^I"
   else
     return "I"
   end
