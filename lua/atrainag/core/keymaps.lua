@@ -30,6 +30,9 @@ keymap.set("n", "<tab>", "<cmd>tabn<CR>", { desc = "Go to next tab" }) --  go to
 keymap.set("n", "<S-tab>", "<cmd>tabp<CR>", { desc = "Go to previous tab" }) --  go to previous tab
 keymap.set("n", "<leader>te", "<cmd>tabedit<CR>", { desc = "Open current buffer in new tab" }) --  move current buffer to new tab
 
+keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal" }, { noremap = true, expr = true })
+keymap.set("n", "<leader>tm", ":term<CR>", { desc = "Open terminal in current tab" })
+
 -- Utilities
 keymap.set("x", "<S-A>", "v:lua.check_visual_mode_append()", { noremap = true, expr = true })
 function _G.check_visual_mode_append()
