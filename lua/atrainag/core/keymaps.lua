@@ -34,7 +34,6 @@ keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal" }, { noremap = 
 keymap.set("n", "<leader>tm", ":term<CR>", { desc = "Open terminal in current tab" })
 
 -- Utilities
-keymap.set("x", "<S-A>", "v:lua.check_visual_mode_append()", { noremap = true, expr = true })
 function _G.check_visual_mode_append()
   if vim.fn.mode() == "V" then
     return "<C-v>g_A"
@@ -42,8 +41,8 @@ function _G.check_visual_mode_append()
     return "A"
   end
 end
+keymap.set("x", "<S-A>", "v:lua.check_visual_mode_append()", { noremap = true, expr = true })
 
-keymap.set("x", "<S-I>", "v:lua.check_visual_mode_insert()", { noremap = true, expr = true })
 function _G.check_visual_mode_insert()
   if vim.fn.mode() == "V" then
     return "<C-v>^I"
@@ -51,3 +50,71 @@ function _G.check_visual_mode_insert()
     return "I"
   end
 end
+keymap.set("x", "<S-I>", "v:lua.check_visual_mode_insert()", { noremap = true, expr = true })
+
+function SnakeToCamel()
+  -- Get the current selection
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos = vim.fn.getpos("'>")
+  local start_row, start_col = start_pos[2], start_pos[3]
+  local end_row, end_col = end_pos[2], end_pos[3]
+
+  -- Get all lines in the selected range
+  local lines = vim.fn.getline(start_row, end_row)
+
+  -- Handle single-line selection only
+  if #lines > 1 then
+    print("This function currently supports single-line selections.")
+    return
+  end
+
+  -- Extract the selected text
+  local line = lines[1]
+  -- Adjust end_col to not exceed the line length
+  end_col = math.min(end_col, #line)
+  local text = line:sub(start_col, end_col)
+
+  -- Perform snake_case to CamelCase transformation
+  local camel_case = text
+    :gsub("_(%w)", function(c)
+      return c:upper()
+    end)
+    :gsub("^%l", string.upper)
+
+  -- Replace the selected text
+  vim.api.nvim_buf_set_text(0, start_row - 1, start_col - 1, start_row - 1, end_col, { camel_case })
+end
+vim.api.nvim_set_keymap("v", "<leader>snc", ":lua SnakeToCamel()<CR>", { noremap = true, silent = true })
+
+function CamelToSnake()
+  -- Get the current selection
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos = vim.fn.getpos("'>")
+  local start_row, start_col = start_pos[2], start_pos[3]
+  local end_row, end_col = end_pos[2], end_pos[3]
+
+  -- Get all lines in the selected range
+  local lines = vim.fn.getline(start_row, end_row)
+
+  -- Handle single-line selection only
+  if #lines > 1 then
+    print("This function currently supports single-line selections.")
+    return
+  end
+
+  -- Extract the selected text
+  local line = lines[1]
+  -- Adjust end_col to not exceed the line length
+  end_col = math.min(end_col, #line)
+  local text = line:sub(start_col, end_col)
+
+  -- Perform CamelCase to snake_case transformation
+  local snake_case = text
+    :gsub("(%u)(%u%l)", "%1_%2") -- Add underscore between consecutive uppercase and uppercase-lowercase
+    :gsub("(%l)(%u)", "%1_%2") -- Add underscore between lowercase and uppercase
+    :lower() -- Convert all to lowercase
+
+  -- Replace the selected text
+  vim.api.nvim_buf_set_text(0, start_row - 1, start_col - 1, start_row - 1, end_col, { snake_case })
+end
+vim.api.nvim_set_keymap("v", "<leader>cms", ":lua CamelToSnake()<CR>", { noremap = true, silent = true })
