@@ -2,10 +2,19 @@ vim.cmd("let g:netrw_liststyle = 3")
 
 local opt = vim.opt
 
+-- terminal
+opt.shell = [["C:\Program Files\PowerShell\7\pwsh.exe"]]
+opt.shellxquote = ""
+
+opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "
+opt.shellquote = ""
+opt.shellpipe = "| Out-File -Encoding UTF8 %s"
+opt.shellredir = "| Out-File -Encoding UTF8 %s"
+
 -- encoding
 vim.scriptencoding = "utf-8"
-vim.opt.encoding = "utf-8"
-vim.opt.fileencoding = "utf-8"
+opt.encoding = "utf-8"
+opt.fileencoding = "utf-8"
 
 opt.hlsearch = true
 
@@ -70,3 +79,16 @@ opt.path:append({ "**" })
 opt.wildignore:append({ "*/node_modules/*" })
 
 opt.formatoptions:append("r")
+
+-- Define a global variable to track recording status
+vim.api.nvim_create_autocmd("RecordingEnter", {
+  callback = function()
+    vim.cmd("redrawstatus")
+  end,
+})
+
+vim.api.nvim_create_autocmd("RecordingLeave", {
+  callback = function()
+    vim.cmd("redrawstatus")
+  end,
+})

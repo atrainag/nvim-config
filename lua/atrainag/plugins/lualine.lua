@@ -48,6 +48,13 @@ return {
         c = { bg = colors.inactive_bg, fg = colors.semilightgray },
       },
     }
+    local function recording_status()
+      local reg = vim.fn.reg_recording()
+      if reg and reg ~= "" then
+        return "Recording @" .. reg
+      end
+      return ""
+    end
 
     -- configure lualine with modified theme
     lualine.setup({
@@ -56,6 +63,7 @@ return {
       },
       sections = {
         lualine_x = {
+          recording_status,
           {
             lazy_status.updates,
             cond = lazy_status.has_updates,

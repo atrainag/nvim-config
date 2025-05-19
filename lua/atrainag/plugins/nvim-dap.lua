@@ -29,7 +29,7 @@ return {
 
     dap.adapters.coreclr = {
       type = "executable",
-      command = "/usr/bin/netcoredbg",
+      command = "C:\\Users\\Jeric\\scoop\\shims\\netcoredbg.exe",
       args = { "--interpreter=vscode" },
     }
 
@@ -38,8 +38,13 @@ return {
         type = "coreclr",
         name = "launch - netcoredbg",
         request = "launch",
+        env = {
+          ASPNETCORE_ENVIRONMENT = "Development",
+          DOTNET_USE_POLLING_FILE_WATCHER = "1",
+          ASPNETCORE_URLS = "https://localhost:5271",
+        },
         program = function()
-          return vim.fn.input("Path to dll", vim.fn.getcwd() .. "/bin/Debug/", "file")
+          return vim.fn.input("Path to dll", vim.fn.getcwd() .. "\\bin\\Debug\\net7.0\\backend.dll", "file")
         end,
       },
     }
