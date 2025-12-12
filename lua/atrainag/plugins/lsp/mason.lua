@@ -37,6 +37,8 @@ return {
         "emmet_ls",
         "prismals",
         "pyright",
+        "jdtls",
+        "angularls",
       },
     })
 
@@ -45,8 +47,8 @@ return {
         "prettier", -- prettier formatter
         "stylua", -- lua formatter
         "isort",
+        "black",
         "eslint_d",
-        sp,
       },
     })
   end,
