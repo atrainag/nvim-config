@@ -10,6 +10,7 @@ opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "
 opt.shellquote = ""
 opt.shellpipe = "| Out-File -Encoding UTF8 %s"
 opt.shellredir = "| Out-File -Encoding UTF8 %s"
+opt.fileformat = unix
 
 -- encoding
 vim.scriptencoding = "utf-8"
@@ -39,9 +40,9 @@ opt.relativenumber = true
 opt.number = true
 
 -- tabs & indentation
-opt.tabstop = 4 -- 4 spaces for tabs
-opt.shiftwidth = 4 -- 4 spaces for indent width
-opt.expandtab = true -- expand tab to spaces
+opt.tabstop = 4       -- 4 spaces for tabs
+opt.shiftwidth = 4    -- 4 spaces for indent width
+opt.expandtab = true  -- expand tab to spaces
 opt.autoindent = true -- copy indent from current line when starting new one
 opt.smartindent = true
 opt.smarttab = true
@@ -51,7 +52,7 @@ opt.wrap = true
 
 -- search settings
 opt.ignorecase = true -- ignore case when searching
-opt.smartcase = true -- if you include mixed case in your search, assumes you want case-sensitive
+opt.smartcase = true  -- if you include mixed case in your search, assumes you want case-sensitive
 
 opt.cursorline = true
 
@@ -59,7 +60,7 @@ opt.cursorline = true
 -- (have to use iterm2 or any other true color terminal)
 opt.termguicolors = true
 opt.background = "dark" -- colorschemes that can be light or dark will be made dark
-opt.signcolumn = "yes" -- show sign column so that text doesn't shift
+opt.signcolumn = "yes"  -- show sign column so that text doesn't shift
 
 -- backspace
 opt.backspace = "indent,eol,start" -- allow backspace on indent, end of line or insert mode start position
@@ -82,13 +83,18 @@ opt.formatoptions:append("r")
 
 -- Define a global variable to track recording status
 vim.api.nvim_create_autocmd("RecordingEnter", {
-  callback = function()
-    vim.cmd("redrawstatus")
-  end,
+    callback = function()
+        vim.cmd("redrawstatus")
+    end,
 })
 
 vim.api.nvim_create_autocmd("RecordingLeave", {
-  callback = function()
-    vim.cmd("redrawstatus")
-  end,
+    callback = function()
+        vim.cmd("redrawstatus")
+    end,
+})
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+    pattern = "*",
+    callback = function() vim.opt_local.fileformat = "unix" end
 })
