@@ -60,7 +60,7 @@ return {
         },
       },
       filters = {
-        dotfiles = true,
+        dotfiles = false,
         custom = {
           "node_modules/.*",
           ".DS_Store",
