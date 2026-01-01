@@ -1,0 +1,105 @@
+--
+-- return {
+--   "epwalsh/obsidian.nvim",
+--   version = "*", -- recommended, use latest release instead of latest commit
+--   lazy = true,
+--   ft = "markdown",
+--   dependencies = {
+--     -- Required.
+--     "nvim-lua/plenary.nvim",
+--   },
+--   config = function()
+--     require("obsidian").setup({
+--
+--       workspaces = {
+--         {
+--           name = "knowledge",
+--           path = "~/knowledge",
+--         },
+--       },
+--
+--       ---@param title string|?
+--       ---@return string
+--       note_id_func = function(title)
+--         -- Format time as YYMMDDHHMM
+--         local timestamp = os.date("%Y%m%d%H%M")
+--
+--         local suffix = ""
+--         if title ~= nil and title ~= "" then
+--           -- Convert title to a safe filename
+--           suffix = title
+--             :lower()
+--             :gsub("%s+", "-") -- spaces  dashes
+--             :gsub("[^a-z0-9%-]", "") -- remove invalid chars
+--             :gsub("%-+", "-") -- collapse multiple dashes
+--             :gsub("^%-+", "") -- trim leading dash
+--             :gsub("%-+$", "") -- trim trailing dash
+--         else
+--           -- Fallback: random 4 uppercase letters
+--           for _ = 1, 4 do
+--             suffix = suffix .. string.char(math.random(65, 90))
+--           end
+--         end
+--
+--         return timestamp .. "-" .. suffix
+--       end,
+--
+--       -- Optional, customize how note file names are generated given the ID, target directory, and title.
+--       ---@param spec { id: string, dir: obsidian.Path, title: string|? }
+--       ---@return string|obsidian.Path The full path to the new note.
+--       note_path_func = function(spec)
+--         -- This is equivalent to the default behavior.
+--         local path = spec.dir / tostring(spec.id)
+--         return path:with_suffix(".md")
+--       end,
+--
+--       ui = {
+--         enable = true, -- set to false to disable all additional syntax features
+--         update_debounce = 200, -- update delay after a text change (in milliseconds)
+--         max_file_length = 5000, -- disable UI features for files with more than this many lines
+--         -- Define how various check-boxes are displayed
+--         checkboxes = {
+--           -- NOTE: the 'char' value has to be a single character, and the highlight groups are defined below.
+--           [" "] = { char = "≤░ä▒", hl_group = "ObsidianTodo" },
+--           ["x"] = { char = "∩àè", hl_group = "ObsidianDone" },
+--           [">"] = { char = "∩ä╕", hl_group = "ObsidianRightArrow" },
+--           ["~"] = { char = "≤░░▒", hl_group = "ObsidianTilde" },
+--           ["!"] = { char = "∩ü▒", hl_group = "ObsidianImportant" },
+--           -- Replace the above with this if you don't have a patched font:
+--           -- [" "] = { char = "ΓÿÉ", hl_group = "ObsidianTodo" },
+--           -- ["x"] = { char = "Γ£ö", hl_group = "ObsidianDone" },
+--
+--           -- You can also add more custom ones...
+--         },
+--         -- Use bullet marks for non-checkbox lists.
+--         bullets = { char = "ΓÇó", hl_group = "ObsidianBullet" },
+--         external_link_icon = { char = "∩éÄ", hl_group = "ObsidianExtLinkIcon" },
+--         -- Replace the above with this if you don't have a patched font:
+--         -- external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
+--         reference_text = { hl_group = "ObsidianRefText" },
+--         highlight_text = { hl_group = "ObsidianHighlightText" },
+--         tags = { hl_group = "ObsidianTag" },
+--         block_ids = { hl_group = "ObsidianBlockID" },
+--         hl_groups = {
+--           -- The options are passed directly to `vim.api.nvim_set_hl()`. See `:help nvim_set_hl`.
+--           ObsidianTodo = { bold = true, fg = "#f78c6c" },
+--           ObsidianDone = { bold = true, fg = "#89ddff" },
+--           ObsidianRightArrow = { bold = true, fg = "#f78c6c" },
+--           ObsidianTilde = { bold = true, fg = "#ff5370" },
+--           ObsidianImportant = { bold = true, fg = "#d73128" },
+--           ObsidianBullet = { bold = true, fg = "#89ddff" },
+--           ObsidianRefText = { underline = true, fg = "#c792ea" },
+--           ObsidianExtLinkIcon = { fg = "#c792ea" },
+--           ObsidianTag = { italic = true, fg = "#89ddff" },
+--           ObsidianBlockID = { italic = true, fg = "#89ddff" },
+--           ObsidianHighlightText = { bg = "#75662e" },
+--         },
+--       },
+--       templates = {
+--         folder = "~/knowledge/template",
+--         date_format = "%Y-%m-%d-%a",
+--         time_format = "%H:%M",
+--       },
+--     })
+--   end,
+-- }
