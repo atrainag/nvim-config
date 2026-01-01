@@ -15,24 +15,31 @@ return {
           path = "D:\\Knowledge",
         },
       },
-      -- Optional, customize how note IDs are generated given an optional title.
+
       ---@param title string|?
       ---@return string
       note_id_func = function(title)
-        -- Create note IDs in a Zettelkasten format with a timestamp and a suffix.
-        -- In this case a note with the title 'My new note' will be given an ID that looks
-        -- like '1657296016-my-new-note', and therefore the file name '1657296016-my-new-note.md'
+        -- Format time as YYMMDDHHMM
+        local timestamp = os.date("%Y%m%d%H%M")
+
         local suffix = ""
-        if title ~= nil then
-          -- If title is given, transform it into valid file name.
-          suffix = title:gsub(" ", "-"):gsub("[^A-Za-z0-9-]", ""):lower()
+        if title ~= nil and title ~= "" then
+          -- Convert title to a safe filename
+          suffix = title
+            :lower()
+            :gsub("%s+", "-") -- spaces  dashes
+            :gsub("[^a-z0-9%-]", "") -- remove invalid chars
+            :gsub("%-+", "-") -- collapse multiple dashes
+            :gsub("^%-+", "") -- trim leading dash
+            :gsub("%-+$", "") -- trim trailing dash
         else
-          -- If title is nil, just add 4 random uppercase letters to the suffix.
+          -- Fallback: random 4 uppercase letters
           for _ = 1, 4 do
             suffix = suffix .. string.char(math.random(65, 90))
           end
         end
-        return tostring(os.time()) .. "-" .. suffix
+
+        return timestamp .. "-" .. suffix
       end,
 
       -- Optional, customize how note file names are generated given the ID, target directory, and title.
