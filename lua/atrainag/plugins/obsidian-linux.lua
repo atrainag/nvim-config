@@ -1,3 +1,4 @@
+return {}
 --
 -- return {
 --   "epwalsh/obsidian.nvim",
