@@ -62,6 +62,13 @@ return {
           preview_cutoff = 9999,
         },
       },
+      live_grep = {
+        on_input_filter_cb = function(prompt)
+          -- turn: "neovim work" -> "neovim.*work"
+          local transformed = prompt:gsub("%s+", ".*")
+          return { prompt = transformed }
+        end,
+      },
     }
     opts.extensions = {
       file_browser = {

@@ -16,30 +16,74 @@ return {
         },
       },
 
-      ---@param title string|?
-      ---@return string
-      note_id_func = function(title)
-        -- Format time as YYMMDDHHMM
-        local timestamp = os.date("%Y%m%d%H%M")
+      note_frontmatter_func = function(note)
+        local aliases = note.aliases or {}
 
-        local suffix = ""
-        if title ~= nil and title ~= "" then
-          -- Convert title to a safe filename
-          suffix = title
-            :lower()
-            :gsub("%s+", "-") -- spaces  dashes
-            :gsub("[^a-z0-9%-]", "") -- remove invalid chars
-            :gsub("%-+", "-") -- collapse multiple dashes
-            :gsub("^%-+", "") -- trim leading dash
-            :gsub("%-+$", "") -- trim trailing dash
-        else
-          -- Fallback: random 4 uppercase letters
-          for _ = 1, 4 do
-            suffix = suffix .. string.char(math.random(65, 90))
+        -- Check if any alias starts with TOPIC
+        local new_aliases = {}
+        for _, a in ipairs(aliases) do
+          if a:match("^TOPIC%s*") then
+            -- Remove the TOPIC prefix from alias
+            local clean_alias = a:gsub("^TOPIC%s*", "")
+            table.insert(new_aliases, clean_alias) -- optionally keep clean alias
+          -- Or skip inserting if you just want to flag as TOPIC
+          else
+            table.insert(new_aliases, a)
           end
         end
 
-        return timestamp .. "-" .. suffix
+        -- Optional: keep TOPIC as a flag
+        -- table.insert(new_aliases, "TOPIC")
+
+        local fm = {
+          id = note.id,
+          aliases = new_aliases,
+          date = os.date("%d-%m-%Y %H:%M"),
+        }
+
+        return fm
+      end,
+
+      ---@param title string|?
+      ---@return string
+      note_id_func = function(title)
+        local timestamp = os.date("%d-%m-%Y-%H-%M")
+
+        -- if no title, or just TOPIC with nothing else
+        if not title or title:match("^%s*$") or title:match("^[Tt][Oo][Pp][Ii][Cc]%s*$") then
+          return timestamp
+        end
+
+        -- Check if this is a topic
+        local is_topic = title:match("^[Tt][Oo][Pp][Ii][Cc]%s+")
+        if is_topic then
+          local clean_title = title:gsub("^[Tt][Oo][Pp][Ii][Cc]%s+", "")
+          -- fallback to timestamp if nothing left
+          if clean_title == "" then
+            return timestamp
+          end
+          -- sanitize
+          local filename = clean_title
+            :lower()
+            :gsub("%s+", "-")
+            :gsub("[^a-z0-9%-]", "")
+            :gsub("%-+", "-")
+            :gsub("^%-+", "")
+            :gsub("%-+$", "")
+          if filename == "" then
+            return timestamp
+          end
+          return filename
+        end
+
+        -- Normal Zettel with optional suffix
+        local suffix =
+          title:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", ""):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
+        if suffix == "" then
+          return timestamp
+        end
+
+        return suffix .. "-" .. timestamp
       end,
 
       -- Optional, customize how note file names are generated given the ID, target directory, and title.
@@ -52,51 +96,43 @@ return {
       end,
 
       ui = {
-        enable = true, -- set to false to disable all additional syntax features
-        update_debounce = 200, -- update delay after a text change (in milliseconds)
-        max_file_length = 5000, -- disable UI features for files with more than this many lines
-        -- Define how various check-boxes are displayed
-        checkboxes = {
-          -- NOTE: the 'char' value has to be a single character, and the highlight groups are defined below.
-          [" "] = { char = "󰄱", hl_group = "ObsidianTodo" },
-          ["x"] = { char = "", hl_group = "ObsidianDone" },
-          [">"] = { char = "", hl_group = "ObsidianRightArrow" },
-          ["~"] = { char = "󰰱", hl_group = "ObsidianTilde" },
-          ["!"] = { char = "", hl_group = "ObsidianImportant" },
-          -- Replace the above with this if you don't have a patched font:
-          -- [" "] = { char = "☐", hl_group = "ObsidianTodo" },
-          -- ["x"] = { char = "✔", hl_group = "ObsidianDone" },
-
-          -- You can also add more custom ones...
-        },
-        -- Use bullet marks for non-checkbox lists.
-        bullets = { char = "•", hl_group = "ObsidianBullet" },
-        external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
-        -- Replace the above with this if you don't have a patched font:
-        -- external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
-        reference_text = { hl_group = "ObsidianRefText" },
-        highlight_text = { hl_group = "ObsidianHighlightText" },
-        tags = { hl_group = "ObsidianTag" },
-        block_ids = { hl_group = "ObsidianBlockID" },
-        hl_groups = {
-          -- The options are passed directly to `vim.api.nvim_set_hl()`. See `:help nvim_set_hl`.
-          ObsidianTodo = { bold = true, fg = "#f78c6c" },
-          ObsidianDone = { bold = true, fg = "#89ddff" },
-          ObsidianRightArrow = { bold = true, fg = "#f78c6c" },
-          ObsidianTilde = { bold = true, fg = "#ff5370" },
-          ObsidianImportant = { bold = true, fg = "#d73128" },
-          ObsidianBullet = { bold = true, fg = "#89ddff" },
-          ObsidianRefText = { underline = true, fg = "#c792ea" },
-          ObsidianExtLinkIcon = { fg = "#c792ea" },
-          ObsidianTag = { italic = true, fg = "#89ddff" },
-          ObsidianBlockID = { italic = true, fg = "#89ddff" },
-          ObsidianHighlightText = { bg = "#75662e" },
-        },
+        enable = false, -- set to false to disable all additional syntax features
       },
       templates = {
         folder = "template",
-        date_format = "%Y-%m-%d-%a",
+        date_format = "%d-%m-%Y",
         time_format = "%H:%M",
+      },
+      daily_notes = {
+        -- Optional, if you want to change the date format for the ID of daily notes.
+        date_format = "%Y-%m-%d",
+
+        alias_format = "journal-%d-%m-%Y-%H-%M",
+        -- Optional, if you want to automatically insert a template from your template directory like 'daily.md'
+        template = "daily template.md",
+      },
+      follow_url_func = function(url)
+        -- full path to Zen Browser
+        local zen_path = "C:/Program Files/Zen Browser/zen.exe"
+        -- run Zen Browser with the URL
+        vim.fn.jobstart({ zen_path, url }, { detach = true })
+      end,
+      mappings = {
+        ["<CR>"] = {
+          action = function()
+            local obsidian = require("obsidian")
+            local util = obsidian.util
+
+            -- Check if cursor is on a markdown / wiki link
+            if util.cursor_on_markdown_link() then
+              return util.gf_passthrough()
+            end
+
+            -- Otherwise do nothing
+            return ""
+          end,
+          opts = { buffer = true, expr = true },
+        },
       },
     })
   end,
