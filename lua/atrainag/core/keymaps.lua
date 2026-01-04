@@ -16,7 +16,7 @@ keymap.set("n", "-", "<C-x>", { desc = "Decrement number" }) -- decrement
 -- Save file and quit
 keymap.set("n", "<Leader>w", ":update<Return>", opts, { desc = "Save file" })
 keymap.set("n", "<Leader>q", ":wq<Return>", opts, { desc = "Quit file" })
-keymap.set("n", "<Leader>Q", ":wqa!<Return>", opts, { desc = "Force Quit all files" })
+keymap.set("n", "<Leader>Q", ":qa!<Return>", opts, { desc = "Force Quit all files" })
 
 -- Window management
 keymap.set("n", "sv", "<C-w>v", { desc = "Split window vertically" }) -- split window vertically
@@ -196,3 +196,22 @@ function CamelToSnake()
 end
 
 vim.api.nvim_set_keymap("v", "<leader>cms", ":lua CamelToSnake()<CR>", { noremap = true, silent = true })
+
+local uname = vim.loop.os_uname().sysname
+local is_windows = uname == "Windows_NT"
+
+if is_windows then
+  vim.api.nvim_set_keymap(
+    "n",
+    "<leader>of",
+    ":!python D:\\Knowledge\\scripts\\finance_calculate.py<CR>",
+    { noremap = true, silent = true }
+  )
+else
+  vim.api.nvim_set_keymap(
+    "n",
+    "<leader>of",
+    ":!python ~/knowledge/scripts/finance_calculate.py<CR>",
+    { noremap = true, silent = true }
+  )
+end

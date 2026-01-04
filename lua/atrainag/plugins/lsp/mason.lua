@@ -60,7 +60,7 @@ return {
 
     -- Not Termux
     if not is_termux then
-      table.insert(lsp_servers, "stylua")
+      table.insert(lsp_formatter, "stylua")
     end
     mason_lspconfig.setup({
       ensure_installed = lsp_servers,
