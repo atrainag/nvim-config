@@ -8,14 +8,46 @@ return {
     "nvim-lua/plenary.nvim",
   },
   config = function()
-    require("obsidian").setup({
+    local workspaces
+    local uname = vim.loop.os_uname().sysname
+
+    local is_windows = uname == "Windows_NT"
+    local is_macos = uname == "Darwin"
+    local is_linux = uname == "Linux"
+    local is_termux = is_linux and vim.env.TERMUX_VERSION ~= nil
+    local is_wsl = vim.fn.has("wsl") == 1
+    if is_windows then
       workspaces = {
         {
           name = "knowledge",
           path = "D:\\Knowledge",
         },
-      },
+      }
+    else
+      -- Linux / WSL / macOS / termux
+      workspaces = {
+        {
+          name = "knowledge",
+          path = "~/Knowledge",
+        },
+      }
+    end
 
+    local function follow_url_func(url)
+      if is_windows or is_wsl then
+        local zen_path = "C:/Program Files/Zen Browser/zen.exe"
+        vim.fn.jobstart({ zen_path, url }, { detach = true })
+      elseif is_termux then
+        -- Android (Termux)
+        vim.fn.jobstart({ "termux-open-url", url }, { detach = true })
+      else
+        -- Linux / WSL / macOS
+        vim.fn.jobstart({ "xdg-open", url }, { detach = true })
+      end
+    end
+
+    require("obsidian").setup({
+      workspaces = workspaces,
       note_frontmatter_func = function(note)
         local aliases = note.aliases or {}
 
@@ -44,45 +76,24 @@ return {
         return fm
       end,
 
+      -- Optional, customize how note IDs are generated given an optional title.
       ---@param title string|?
       ---@return string
       note_id_func = function(title)
+        -- Create note IDs in a Zettelkasten format with a timestamp and a suffix.
+        -- In this case a note with the title 'My new note' will be given an ID that looks
+        -- like '1657296016-my-new-note', and therefore the file name '1657296016-my-new-note.md'
         local timestamp = os.date("%d-%m-%Y-%H-%M")
-
-        -- if no title, or just TOPIC with nothing else
-        if not title or title:match("^%s*$") or title:match("^[Tt][Oo][Pp][Ii][Cc]%s*$") then
-          return timestamp
-        end
-
-        -- Check if this is a topic
-        local is_topic = title:match("^[Tt][Oo][Pp][Ii][Cc]%s+")
-        if is_topic then
-          local clean_title = title:gsub("^[Tt][Oo][Pp][Ii][Cc]%s+", "")
-          -- fallback to timestamp if nothing left
-          if clean_title == "" then
-            return timestamp
+        local suffix = ""
+        if title ~= nil then
+          -- If title is given, transform it into valid file name.
+          suffix = title:gsub(" ", "-"):gsub("[^A-Za-z0-9-]", ""):lower()
+        else
+          -- If title is nil, just add 4 random uppercase letters to the suffix.
+          for _ = 1, 4 do
+            suffix = suffix .. string.char(math.random(65, 90))
           end
-          -- sanitize
-          local filename = clean_title
-            :lower()
-            :gsub("%s+", "-")
-            :gsub("[^a-z0-9%-]", "")
-            :gsub("%-+", "-")
-            :gsub("^%-+", "")
-            :gsub("%-+$", "")
-          if filename == "" then
-            return timestamp
-          end
-          return filename
         end
-
-        -- Normal Zettel with optional suffix
-        local suffix =
-          title:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", ""):gsub("%-+", "-"):gsub("^%-+", ""):gsub("%-+$", "")
-        if suffix == "" then
-          return timestamp
-        end
-
         return suffix .. "-" .. timestamp
       end,
 
@@ -111,12 +122,6 @@ return {
         -- Optional, if you want to automatically insert a template from your template directory like 'daily.md'
         template = "daily template.md",
       },
-      follow_url_func = function(url)
-        -- full path to Zen Browser
-        local zen_path = "C:/Program Files/Zen Browser/zen.exe"
-        -- run Zen Browser with the URL
-        vim.fn.jobstart({ zen_path, url }, { detach = true })
-      end,
       mappings = {
         ["<CR>"] = {
           action = function()
@@ -134,6 +139,7 @@ return {
           opts = { buffer = true, expr = true },
         },
       },
+      follow_url_func = follow_url_func,
     })
   end,
 }
