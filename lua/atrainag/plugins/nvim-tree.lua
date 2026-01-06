@@ -1,6 +1,13 @@
 return {
   "nvim-tree/nvim-tree.lua",
   dependencies = "nvim-tree/nvim-web-devicons",
+  cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeFindFile", "NvimTreeCollapse", "NvimTreeRefresh" },
+  keys = {
+    { "<leader>tt", "<cmd>NvimTreeToggle<CR>", desc = "Toggle file explorer" },
+    { "<leader>tf", "<cmd>NvimTreeFindFileToggle<CR>", desc = "Toggle file explorer on current file" },
+    { "<leader>tc", "<cmd>NvimTreeCollapse<CR>", desc = "Collapse file explorer" },
+    { "<leader>tr", "<cmd>NvimTreeRefresh<CR>", desc = "Refresh file explorer" },
+  },
   config = function()
     local nvimtree = require("nvim-tree")
     -- recommended settings from nvim-tree documentation
@@ -170,17 +177,21 @@ return {
         args = { "/c", "start", "" },
       },
     })
-    if vim.fn.argc(-1) == 0 then
-      vim.cmd("NvimTreeFocus")
-    end
-    -- set keymaps
-    local keymap = vim.keymap -- for conciseness
+    
+    -- Open nvim-tree on startup if no files were opened
+    vim.api.nvim_create_autocmd("VimEnter", {
+      callback = function()
+        if vim.fn.argc(-1) == 0 then
+          vim.schedule(function()
+            vim.cmd("NvimTreeFocus")
+          end)
+        end
+      end,
+    })
+    
+    -- Additional keymap for CD (not in keys table because it requires API)
     local api = require("nvim-tree.api")
-    keymap.set("n", "<leader>tt", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" }) -- toggle file explorer
-    keymap.set("n", "<leader>tf", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "Toggle file explorer on current file" }) -- toggle file explorer on current file
-    keymap.set("n", "<leader>tc", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse file explorer" }) -- collapse file explorer
-    keymap.set("n", "<leader>tr", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" }) -- refresh file explorer
-    keymap.set("n", "<leader><CR>", api.tree.change_root_to_node, { desc = "CD" })
+    vim.keymap.set("n", "<leader><CR>", api.tree.change_root_to_node, { desc = "CD" })
   end,
 }
 

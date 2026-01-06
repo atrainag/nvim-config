@@ -2,14 +2,16 @@ return {
   {
     {
       "rose-pine/neovim",
+      name = "rose-pine",
+      lazy = true, -- Don't load unless explicitly called (true)
       priority = 1000,
       config = function()
-        vim.g.rose_pine_variant = "moon"
         vim.cmd("colorscheme rose-pine")
       end,
     },
     {
       "folke/tokyonight.nvim",
+      lazy = false, -- Load immediately since this is your active theme(false)
       priority = 1001,
       config = function()
         local bg = "#011628"

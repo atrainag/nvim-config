@@ -3,6 +3,14 @@ return {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
     dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim" },
+    keys = {
+      { "<leader>am", desc = "Open harpoon window" },
+      { "<leader>aa", desc = "Add current file into harpoon" },
+      { "<leader>a1", desc = "First harpoon window" },
+      { "<leader>a2", desc = "Second harpoon window" },
+      { "<leader>a3", desc = "Third harpoon window" },
+      { "<leader>a4", desc = "Fourth harpoon window" },
+    },
     config = function()
       local harpoon = require("harpoon")
       harpoon:setup({})

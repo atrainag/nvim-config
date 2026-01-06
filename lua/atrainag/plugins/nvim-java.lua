@@ -1,1 +1,4 @@
-return { "nvim-java/nvim-java" }
+return { 
+  "nvim-java/nvim-java",
+  ft = "java", -- Only load for Java files
+}

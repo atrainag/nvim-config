@@ -4,6 +4,10 @@ return {
     "rcarriga/nvim-dap-ui",
     "nvim-neotest/nvim-nio",
   },
+  keys = {
+    { "<Leader>bb", desc = "Toggle breakpoint" },
+    { "<Leader>bc", desc = "Continue debugging" },
+  },
 
   config = function()
     local dap = require("dap")
