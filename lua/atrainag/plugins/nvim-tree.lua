@@ -82,6 +82,10 @@ return {
       sort = {
         sorter = "case_sensitive",
       },
+      system_open = {
+        cmd = "cmd",
+        args = { "/c", "start", "" },
+      },
     })
 
     if vim.fn.argc(-1) == 0 then

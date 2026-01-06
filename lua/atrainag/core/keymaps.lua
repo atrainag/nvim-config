@@ -107,6 +107,32 @@ vim.keymap.set("n", "<leader>mm", ":MarkdownPreviewToggle<CR>", {
 -- Zen Mode
 vim.keymap.set("n", "<leader>z", ":ZenMode<CR>", { noremap = true, silent = true, desc = "Zen Mode Toggle" })
 
+-- Open file
+vim.keymap.set("x", "gX", function()
+  -- Get the selected text in visual mode
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos = vim.fn.getpos("'>")
+  local lines = vim.fn.getline(start_pos[2], end_pos[2])
+
+  -- If selection is single line, extract the substring
+  local file_path
+  if #lines == 1 then
+    local line = lines[1]
+    local s = start_pos[3]
+    local e = end_pos[3]
+    file_path = line:sub(s, e)
+  else
+    -- Multiple lines? join with spaces
+    file_path = table.concat(lines, " ")
+  end
+
+  -- Remove leading/trailing whitespace
+  file_path = file_path:gsub("^%s+", ""):gsub("%s+$", "")
+
+  -- Open with default program
+  os.execute('cmd /c start "" "' .. file_path .. '"')
+end, { noremap = true, silent = true, desc = "Open curr path" })
+
 -- Utilities
 function _G.check_visual_mode_append()
   if vim.fn.mode() == "V" then

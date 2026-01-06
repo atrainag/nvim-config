@@ -124,7 +124,7 @@ return {
       },
       daily_notes = {
         -- Optional, if you want to change the date format for the ID of daily notes.
-        -- This will create filenames like: 2026-01-04-Sat.md
+        -- This will create filenames like: 2026-01-04.md
         date_format = "%Y-%m-%d",
         -- Optional, if you want to automatically insert a template from your template directory like 'daily.md'
         template = "daily template.md",
@@ -142,6 +142,12 @@ return {
             return ""
           end,
           opts = { buffer = true, expr = true },
+        },
+        ["<leader>ch"] = {
+          action = function()
+            return require("obsidian").util.toggle_checkbox()
+          end,
+          opts = { buffer = true },
         },
       },
       follow_url_func = follow_url_func,
