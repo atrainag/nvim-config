@@ -102,28 +102,3 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
--- -- clipboard integration for WSL
--- vim.g.clipboard = {
---   name = "WslClipboard",
---   copy = {
---     ["+"] = "/mnt/c/Windows/System32/clip.exe",
---     ["*"] = "/mnt/c/Windows/System32/clip.exe",
---   },
---   paste = {
---     ["+"] = {
---       "/mnt/c/Program Files/PowerShell/7/pwsh.exe",
---       "-NoLogo",
---       "-NoProfile",
---       "-c",
---       '[Console]::Out.Write($(Get-Clipboard -Raw).ToString().Replace("`r", ""))',
---     },
---     ["*"] = {
---       "/mnt/c/Program Files/PowerShell/7/pwsh.exe",
---       "-NoLogo",
---       "-NoProfile",
---       "-c",
---       '[Console]::Out.Write($(Get-Clipboard -Raw).ToString().Replace("`r", ""))',
---     },
---   },
---   cache_enabled = 0,
--- }

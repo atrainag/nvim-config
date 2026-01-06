@@ -8,15 +8,9 @@ return {
     "williamboman/mason.nvim",
   },
   config = function()
-    -- NOTE: require("lspconfig") is removed as it is deprecated
-
-    -- import mason_lspconfig plugin
     local mason_lspconfig = require("mason-lspconfig")
-
-    -- import cmp-nvim-lsp plugin
     local cmp_nvim_lsp = require("cmp_nvim_lsp")
-
-    local keymap = vim.keymap -- for conciseness
+    local keymap = vim.keymap
 
     -- Keep your LspAttach autocmd exactly as it is (This is the modern way!)
     vim.api.nvim_create_autocmd("LspAttach", {

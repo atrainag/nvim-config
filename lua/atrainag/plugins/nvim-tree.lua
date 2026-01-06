@@ -7,13 +7,14 @@ return {
     vim.g.loaded_netrw = 1
     vim.g.loaded_netrwPlugin = 1
 
-    -- State variables to track sort mode
-    local sort_by_mtime = false
-    local sort_ascending = true
-
     nvimtree.setup({
       on_attach = function(bufnr)
         local api = require("nvim-tree.api")
+
+        -- State variables (local to this buffer attachment)
+        local sort_by_mtime = false
+        local sort_ascending = false
+
         local function opts(desc)
           return {
             desc = "nvim-tree: " .. desc,
@@ -23,6 +24,7 @@ return {
             nowait = true,
           }
         end
+
         -- default mappings
         api.config.mappings.default_on_attach(bufnr)
 
@@ -42,65 +44,71 @@ return {
         -- Toggle sort by modification time
         vim.keymap.set("n", "z", function()
           sort_by_mtime = not sort_by_mtime
-          
+
           local explorer = require("nvim-tree.core").get_explorer()
+          if not explorer then
+            return
+          end
+
           if sort_by_mtime then
             if sort_ascending then
               explorer.opts.sort.sorter = function(nodes)
                 table.sort(nodes, function(a, b)
                   local time_a = a.fs_stat and a.fs_stat.mtime.sec or 0
                   local time_b = b.fs_stat and b.fs_stat.mtime.sec or 0
-                  return time_a < time_b -- ascending
+                  return time_a < time_b
                 end)
               end
-              vim.notify("Sorting by: Modified Time (Oldest First)", vim.log.levels.INFO)
+              vim.notify("Sorting: Modified Time (Oldest First)", vim.log.levels.INFO)
             else
               explorer.opts.sort.sorter = "modification_time"
-              vim.notify("Sorting by: Modified Time (Newest First)", vim.log.levels.INFO)
+              vim.notify("Sorting: Modified Time (Newest First)", vim.log.levels.INFO)
             end
           else
             explorer.opts.sort.sorter = "case_sensitive"
-            vim.notify("Sorting by: Name", vim.log.levels.INFO)
+            vim.notify("Sorting: Name", vim.log.levels.INFO)
           end
 
-          -- Reload the tree to apply new sorting
           api.tree.reload()
         end, opts("Toggle Sort: Name ↔ Modified Time"))
 
         -- Toggle ascending/descending order
         vim.keymap.set("n", "Z", function()
           sort_ascending = not sort_ascending
-          
+
           local explorer = require("nvim-tree.core").get_explorer()
+          if not explorer then
+            return
+          end
+
           if sort_by_mtime then
             if sort_ascending then
               explorer.opts.sort.sorter = function(nodes)
                 table.sort(nodes, function(a, b)
                   local time_a = a.fs_stat and a.fs_stat.mtime.sec or 0
                   local time_b = b.fs_stat and b.fs_stat.mtime.sec or 0
-                  return time_a < time_b -- ascending
+                  return time_a < time_b
                 end)
               end
-              vim.notify("Sort Order: Ascending (Oldest First)", vim.log.levels.INFO)
+              vim.notify("Order: Ascending (Oldest First)", vim.log.levels.INFO)
             else
               explorer.opts.sort.sorter = "modification_time"
-              vim.notify("Sort Order: Descending (Newest First)", vim.log.levels.INFO)
+              vim.notify("Order: Descending (Newest First)", vim.log.levels.INFO)
             end
           else
             if sort_ascending then
               explorer.opts.sort.sorter = "name"
-              vim.notify("Sort Order: Ascending (A→Z)", vim.log.levels.INFO)
+              vim.notify("Order: Ascending (A→Z)", vim.log.levels.INFO)
             else
               explorer.opts.sort.sorter = function(nodes)
                 table.sort(nodes, function(a, b)
                   return a.name:lower() > b.name:lower()
                 end)
               end
-              vim.notify("Sort Order: Descending (Z→A)", vim.log.levels.INFO)
+              vim.notify("Order: Descending (Z→A)", vim.log.levels.INFO)
             end
           end
-          
-          -- Reload the tree to apply new sorting
+
           api.tree.reload()
         end, opts("Toggle Sort Order: Ascending ↔ Descending"))
       end,
@@ -117,8 +125,8 @@ return {
         icons = {
           glyphs = {
             folder = {
-              arrow_closed = "", -- arrow when folder is closed
-              arrow_open = "", -- arrow when folder is open
+              arrow_closed = "", -- arrow when folder is closed
+              arrow_open = "", -- arrow when folder is open
             },
           },
         },
@@ -175,3 +183,4 @@ return {
     keymap.set("n", "<leader><CR>", api.tree.change_root_to_node, { desc = "CD" })
   end,
 }
+
