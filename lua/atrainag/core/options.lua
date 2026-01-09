@@ -3,13 +3,16 @@ vim.cmd("let g:netrw_liststyle = 3")
 local opt = vim.opt
 
 -- terminal
-opt.shell = [["C:\Program Files\PowerShell\7\pwsh.exe"]]
-opt.shellxquote = ""
-
-opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "
-opt.shellquote = ""
-opt.shellpipe = "| Out-File -Encoding UTF8 %s"
-opt.shellredir = "| Out-File -Encoding UTF8 %s"
+if vim.fn.has("wsl") == 1 or vim.fn.has("unix") == 1 then
+  opt.shell = "/usr/bin/zsh"
+else
+  opt.shell = [["C:\Program Files\PowerShell\7\pwsh.exe"]]
+  opt.shellxquote = ""
+  opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "
+  opt.shellquote = ""
+  opt.shellpipe = "| Out-File -Encoding UTF8 %s"
+  opt.shellredir = "| Out-File -Encoding UTF8 %s"
+end
 opt.fileformat = unix
 
 -- encoding
@@ -74,12 +77,12 @@ if vim.fn.has("wsl") == 1 then
   vim.g.clipboard = {
     name = "WslClipboard",
     copy = {
-      ["+"] = "clip.exe",
-      ["*"] = "clip.exe",
+      ["+"] = "/mnt/c/Windows/System32/clip.exe",
+      ["*"] = "/mnt/c/Windows/System32/clip.exe",
     },
     paste = {
-      ["+"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-      ["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+      ["+"] = '/mnt/c/Program Files/PowerShell/7/pwsh.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+      ["*"] = '/mnt/c/Program Files/PowerShell/7/pwsh.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
     },
     cache_enabled = 0,
   }
@@ -117,4 +120,3 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     vim.opt_local.fileformat = "unix"
   end,
 })
-
