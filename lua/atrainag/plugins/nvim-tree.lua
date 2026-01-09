@@ -7,12 +7,16 @@ return {
     { "<leader>tf", "<cmd>NvimTreeFindFileToggle<CR>", desc = "Toggle file explorer on current file" },
     { "<leader>tc", "<cmd>NvimTreeCollapse<CR>", desc = "Collapse file explorer" },
     { "<leader>tr", "<cmd>NvimTreeRefresh<CR>", desc = "Refresh file explorer" },
+    { "<leader>tv", "<cmd>NvimTreeToggle<CR>", desc = "Toggle view mode (use <leader>v inside tree)" },
   },
   config = function()
     local nvimtree = require("nvim-tree")
     -- recommended settings from nvim-tree documentation
     vim.g.loaded_netrw = 1
     vim.g.loaded_netrwPlugin = 1
+
+    -- State variable for view mode
+    local is_floating = false
 
     nvimtree.setup({
       on_attach = function(bufnr)
@@ -118,6 +122,67 @@ return {
 
           api.tree.reload()
         end, opts("Toggle Sort Order: Ascending ↔ Descending"))
+
+        -- Prompt for directory and change to it
+        vim.keymap.set("n", "<leader>c", function()
+          local input = vim.fn.input("Change directory to: ", vim.fn.getcwd() .. "/", "dir")
+          if input and input ~= "" then
+            local success, err = pcall(function()
+              vim.cmd("cd " .. vim.fn.fnameescape(input))
+              api.tree.change_root(input)
+              vim.notify("Changed directory to: " .. input, vim.log.levels.INFO)
+            end)
+            if not success then
+              vim.notify("Failed to change directory: " .. err, vim.log.levels.ERROR)
+            end
+          end
+        end, opts("Change Directory (Prompt)"))
+        -- Toggle between sidebar and floating mode
+        vim.keymap.set("n", "<leader>v", function()
+          is_floating = not is_floating
+          local view_opts = {}
+          
+          if is_floating then
+            view_opts = {
+              float = {
+                enable = true,
+                quit_on_focus_loss = true,
+                open_win_config = {
+                  relative = "editor",
+                  border = "rounded",
+                  width = math.floor(vim.o.columns * 0.6),
+                  height = math.floor(vim.o.lines * 0.8),
+                  row = math.floor(vim.o.lines * 0.1),
+                  col = math.floor(vim.o.columns * 0.2),
+                },
+              },
+              width = math.floor(vim.o.columns * 0.6),
+            }
+            vim.notify("NvimTree: Floating mode", vim.log.levels.INFO)
+          else
+            view_opts = {
+              float = {
+                enable = false,
+              },
+              width = 30,
+              side = "left",
+            }
+            vim.notify("NvimTree: Sidebar mode", vim.log.levels.INFO)
+          end
+          
+          -- Update the view configuration
+          require("nvim-tree.view").View.float = view_opts.float
+          require("nvim-tree.view").View.width = view_opts.width
+          if view_opts.side then
+            require("nvim-tree.view").View.side = view_opts.side
+          end
+          
+          -- Refresh the tree
+          api.tree.close()
+          vim.schedule(function()
+            api.tree.open()
+          end)
+        end, opts("Toggle Sidebar/Floating Mode"))
       end,
       view = {
         width = 30,
